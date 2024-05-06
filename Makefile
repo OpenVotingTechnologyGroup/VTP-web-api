@@ -82,7 +82,7 @@ run:
 	@ifconfig | awk '/inet /&&!/127.0.0.1/{print $$2}'
 	@/bin/echo -n "Public IP = "
 	@dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com | tr -d '"'
-	cd src/vtp/web/api && MERGE_CONTESTS=${MERGE_CONTESTS}  uvicorn main:app --host ${HOST} --port ${PORT} ${LOG_LEVEL} --reload
+	cd src/vtp/web/api && MERGE_CONTESTS=${MERGE_CONTESTS}  uvicorn main:app --host ${HOST} --port ${PORT} ${LOG_LEVEL} --reload --reload-dir . --reload-dir ../../../../../VTP-web-client/static
 
 # Connect this repo to the VoteTrackerPlus repo assuming normal layout.
 # This allows this repo to run without a VoteTrackerPlus install proper
