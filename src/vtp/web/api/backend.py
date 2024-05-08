@@ -32,6 +32,7 @@ need when running in mock mode.
 
 import json
 import os
+import re
 
 from vtp.core.common import Globals
 from vtp.core.webapi import WebAPI
@@ -146,21 +147,23 @@ class VtpBackend:
             # Just return a mock ballot-check and voter-index
             return VtpBackend.mock_get_ballot_check()
         # handle the incoming ballot and return the ballot-check and voter-index
+        verbosity = os.getenv("BACKEND_VERBOSITY")
+        verbosity = int(verbosity) if re.match(r"^[0-9]$", verbosity) else 3
         operation = AcceptBallotOperation(
             election_data_dir=WebAPI.get_guid_based_edf_dir(vote_store_id),
+            verbosity=verbosity,
         )
         # When testing in sequential cast-ballot mode, maybe merge each ballot
         # as cast
-        merge_p = bool(os.getenv("MERGE_CONTESTS"))
+        prioritize = bool(os.getenv("PRIORITIZE_BALLOTS"))
         # Returns a 2D (ballot check) array, index, a base64 encoded
         # qr_img, receipt_digest tuple
         return operation.run(
             cast_ballot_json=cast_ballot,
             # the demo wants to version receipts
             version_receipts=True,
-            # until there is a backend tabulation server running, merge
-            # the contests in the client's vote_store_id
-            merge_contests=merge_p,
+            # prioritize the new incoming demo CVRs branches
+            prioritize=prioritize,
         )
 
     @staticmethod

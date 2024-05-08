@@ -14,14 +14,13 @@ DOC_DIR     := docs
 SRC_DIR     := src/vtp/web/api
 TEST_DIR    := tests
 BUILD_FILES := pyproject.toml poetry.lock
-HOST        := 127.0.0.1
+HOST        := 0.0.0.0
 PORT        := 8000
 
 # for uvicorn console logging: [critical|error|warning|info|debug|trace]
 VERBOSITY   :=
-# when set to non nil, will merge the ballots as they are cast, but this
-# ONLY works when sequentially casting ballots in demo/test mode
-MERGE_CONTESTS :=
+# For a better demo experience, when set will prioritize new cast ballots
+PRIORITIZE_BALLOTS := -p
 
 # Use colors for errors and warnings when in an interactive terminal
 INTERACTIVE := $(shell test -t 0 && echo 1)
@@ -51,11 +50,14 @@ help:
 	@echo "etags              - constructs an emacs tags table"
 	@echo "conjoin            - conjoins the VoteTrackerPlus repos via"
 	@echo "                     symlinks"
-	@echo "run - will run the uvicorn web-api server (main:app) with"
-	@echo "      host='${HOST}' for localhost operation only.  Set"
-	@echo "      HOST=0.0.0.0 for LAN operation - ${RED}REQUIRES A FIREWALL${END}"
+	@echo "lan - will run the uvicorn web-api server (main:app) in LAN"
+	@echo "      mode (host=${HOST}).  This means that uvicorn will listen"
+	@echo "      on the local LAN for connections ${RED}REQUIRING A FIREWALL${END}"
 	@echo "      ${RED}FOR SECURITY${END}.  See https://www.uvicorn.org/settings"
 	@echo "      for more info."
+	@echo "local - will run the uvicorn web-api server (main:app) in"
+	@echo "        localhost mode (host=127.0.0.1) - the uvicorn server"
+	@echo "        will only respond to host local connections."
 	@echo ""
 	@echo "See ${BUILD_DIR}/README.md for more details and info"
 
@@ -76,13 +78,16 @@ poetry-list-latest:
 requirements.txt: ${BUILD_FILES}
 	poetry export --with dev -f requirements.txt --output requirements.txt
 
-.PHONY: run
-run:
+.PHONY: lan local
+lan:
 	@/bin/echo -n "Local IP  = "
 	@ifconfig | awk '/inet /&&!/127.0.0.1/{print $$2}'
 	@/bin/echo -n "Public IP = "
 	@dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com | tr -d '"'
-	cd src/vtp/web/api && MERGE_CONTESTS=${MERGE_CONTESTS}  uvicorn main:app --host ${HOST} --port ${PORT} ${LOG_LEVEL} --reload --reload-dir . --reload-dir ../../../../../VTP-web-client/static
+	cd src/vtp/web/api && PRIORITIZE_BALLOTS=${PRIORITIZE_BALLOTS} BACKEND_VERBOSITY=${BACKEND_VERBOSITY} uvicorn main:app --host ${HOST} --port ${PORT} ${LOG_LEVEL} --reload --reload-dir . --reload-dir ../../../../../VTP-web-client/static
+
+local:
+	cd src/vtp/web/api && PRIORITIZE_BALLOTS=${PRIORITIZE_BALLOTS} BACKEND_VERBOSITY=${BACKEND_VERBOSITY} uvicorn main:app --host 127.0.0.1 --port ${PORT} ${LOG_LEVEL} --reload --reload-dir . --reload-dir ../../../../../VTP-web-client/static
 
 # Connect this repo to the VoteTrackerPlus repo assuming normal layout.
 # This allows this repo to run without a VoteTrackerPlus install proper
