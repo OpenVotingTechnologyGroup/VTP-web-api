@@ -94,6 +94,7 @@ local:
 # and to run out of the connected git repo directly.
 .PHONY: conjoin
 conjoin:
+	rm -f src/vtp/core src/vtp/ops src/vtp/web/api/static
 	ln -s ../../../VoteTrackerPlus/src/vtp/core src/vtp/core
 	ln -s ../../../VoteTrackerPlus/src/vtp/ops src/vtp/ops
 	ln -s ../../../../../VTP-web-client/static src/vtp/web/api/static
