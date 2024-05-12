@@ -44,17 +44,16 @@ help:
 	@echo "${RED}There is no default make target.${END}  Specify one of:"
 	@echo "pylint             - runs pylint"
 	@echo "pytest             - runs pytest"
-	@echo "poetry-build 	  - performs a poetry local install"
+	@echo "poetry-build       - performs a poetry local install"
 	@echo "poetry-list-latest - will show which poetry packages have updates"
 	@echo "requirements.txt   - updates the python requirements file"
 	@echo "etags              - constructs an emacs tags table"
-	@echo "conjoin            - conjoins the VoteTrackerPlus repos via"
-	@echo "                     symlinks"
-	@echo "lan - will run the uvicorn web-api server (main:app) in LAN"
-	@echo "      mode (host=${HOST}).  This means that uvicorn will listen"
-	@echo "      on the local LAN for connections ${RED}REQUIRING A FIREWALL${END}"
-	@echo "      ${RED}FOR SECURITY${END}.  See https://www.uvicorn.org/settings"
-	@echo "      for more info."
+	@echo "conjoin            - conjoins the VoteTrackerPlus repos via symlinks"
+	@echo "QRcodes            - will generate lan / local QR codes"
+	@echo "lan   - will run the uvicorn web-api server (main:app) in LAN"
+	@echo "        mode (host=${HOST}).  This means that uvicorn will listen"
+	@echo "        on the local LAN for connections ${RED}REQUIRING A FIREWALL${END}"
+	@echo "        ${RED}FOR SECURITY${END}.  See https://www.uvicorn.org/settings for more info."
 	@echo "local - will run the uvicorn web-api server (main:app) in"
 	@echo "        localhost mode (host=127.0.0.1) - the uvicorn server"
 	@echo "        will only respond to host local connections."
@@ -88,6 +87,10 @@ lan:
 
 local:
 	cd src/vtp/web/api && PRIORITIZE_BALLOTS=${PRIORITIZE_BALLOTS} BACKEND_VERBOSITY=${BACKEND_VERBOSITY} uvicorn main:app --host 127.0.0.1 --port ${PORT} ${LOG_LEVEL} --reload --reload-dir . --reload-dir ../../../../../VTP-web-client/static
+
+.PHONY: QRcodes
+QRcodes:
+	./src/vtp/web/api/generate_qrcodes.py
 
 # Connect this repo to the VoteTrackerPlus repo assuming normal layout.
 # This allows this repo to run without a VoteTrackerPlus install proper
