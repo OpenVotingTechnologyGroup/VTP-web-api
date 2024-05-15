@@ -23,3 +23,6 @@ src/vtp/web/api/static
 .venv
 .tool-versions
 .coverage
+
+# ignore QR codes generated at the root
+/*.svg
