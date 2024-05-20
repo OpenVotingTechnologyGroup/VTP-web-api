@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Something to generate the QR codes for the uvicorn server"""
 
+import argparse
 import socket
 
 import requests
@@ -42,13 +43,37 @@ def get_wan_ip():
     return that_ip
 
 
-LAN_IP = get_local_ip()
-print(f"LAN_IP={LAN_IP}")
-lan_qrcode = segno.make_qr("http://" + LAN_IP + ":8000")
-lan_qrcode.save(LAN_IP + ".svg", scale=5, light="#EFF1C5", dark="darkgreen")
+def main():
+    """main"""
+    parser = argparse.ArgumentParser(
+        description="""Will generate the local LAN and internet WAN
+QR codes that if scanned will direct the user to the uvicorn
+web-api server.
+""",
+    )
+    parser.add_argument(
+        "-n",
+        "--printonly",
+        action="store_true",
+        help="will printonly and not write to disk (def=True)",
+    )
 
-WAN_IP = get_wan_ip()
-if WAN_IP != "0.0.0.0":
-    print(f"WAN_IP={WAN_IP}")
-    wan_qrcode = segno.make_qr("http://" + WAN_IP + ":8000")
-    wan_qrcode.save(WAN_IP + ".svg", scale=5, light="#EFF1C5", dark="darkgreen")
+    # Parse args
+    parsed_args = parser.parse_args()
+
+    lan_ip = get_local_ip()
+    print(f"LAN_IP={lan_ip}")
+    if not parsed_args.printonly:
+        lan_qrcode = segno.make_qr("http://" + lan_ip + ":8000")
+        lan_qrcode.save(lan_ip + ".svg", scale=5, light="#EFF1C5", dark="darkgreen")
+
+    wan_ip = get_wan_ip()
+    if wan_ip != "0.0.0.0":
+        print(f"WAN_IP={wan_ip}")
+        if not parsed_args.printonly:
+            wan_qrcode = segno.make_qr("http://" + wan_ip + ":8000")
+            wan_qrcode.save(wan_ip + ".svg", scale=5, light="#EFF1C5", dark="darkgreen")
+
+
+if __name__ == "__main__":
+    main()

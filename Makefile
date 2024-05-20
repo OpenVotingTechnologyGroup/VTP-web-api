@@ -50,13 +50,14 @@ help:
 	@echo "etags              - constructs an emacs tags table"
 	@echo "conjoin            - conjoins the VoteTrackerPlus repos via symlinks"
 	@echo "QRcodes            - will generate lan / local QR codes"
-	@echo "lan   - will run the uvicorn web-api server (main:app) in LAN"
-	@echo "        mode (host=${HOST}).  This means that uvicorn will listen"
-	@echo "        on the local LAN for connections ${RED}REQUIRING A FIREWALL${END}"
-	@echo "        ${RED}FOR SECURITY${END}.  See https://www.uvicorn.org/settings for more info."
-	@echo "local - will run the uvicorn web-api server (main:app) in"
-	@echo "        localhost mode (host=127.0.0.1) - the uvicorn server"
-	@echo "        will only respond to host local connections."
+	@echo "lan       - will run the uvicorn web-api server (main:app) in LAN"
+	@echo "            mode (host=${HOST}).  This means that uvicorn will listen"
+	@echo "            on the local LAN for connections ${RED}REQUIRING A FIREWALL${END}"
+	@echo "            ${RED}FOR SECURITY${END}."
+	@evho "            See https://www.uvicorn.org/settings for more info."
+	@echo "localhost - will run the uvicorn web-api server (main:app) in"
+	@echo "            localhost mode (host=127.0.0.1) - the uvicorn server"
+	@echo "            will only respond to host local connections."
 	@echo ""
 	@echo "See ${BUILD_DIR}/README.md for more details and info"
 
@@ -77,7 +78,7 @@ poetry-list-latest:
 requirements.txt: ${BUILD_FILES}
 	poetry export --with dev -f requirements.txt --output requirements.txt
 
-.PHONY: lan local
+.PHONY: lan localhost
 lan:
 	@/bin/echo -n "Local IP  = "
 	@ifconfig | awk '/inet /&&!/127.0.0.1/{print $$2}'
@@ -85,7 +86,7 @@ lan:
 	@dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com | tr -d '"'
 	cd src/vtp/web/api && PRIORITIZE_BALLOTS=${PRIORITIZE_BALLOTS} BACKEND_VERBOSITY=${BACKEND_VERBOSITY} uvicorn main:app --host ${HOST} --port ${PORT} ${LOG_LEVEL} --reload --reload-dir . --reload-dir ../../../../../VTP-web-client/static
 
-local:
+localhost:
 	cd src/vtp/web/api && PRIORITIZE_BALLOTS=${PRIORITIZE_BALLOTS} BACKEND_VERBOSITY=${BACKEND_VERBOSITY} uvicorn main:app --host 127.0.0.1 --port ${PORT} ${LOG_LEVEL} --reload --reload-dir . --reload-dir ../../../../../VTP-web-client/static
 
 .PHONY: QRcodes
