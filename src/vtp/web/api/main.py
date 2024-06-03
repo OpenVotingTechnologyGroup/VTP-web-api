@@ -23,7 +23,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     """Supply a favicon"""
-    return FileResponse("favicon.ico")
+    return FileResponse("static/favicon.ico")
 
 
 # redirect root to the index page
