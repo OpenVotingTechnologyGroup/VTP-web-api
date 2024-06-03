@@ -2,7 +2,7 @@
 
 from backend import VtpBackend
 from fastapi import FastAPI, status
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 # from starlette.responses import FileResponse
@@ -18,6 +18,12 @@ vote_store_ids = {}
 
 # mount a static root for the static pages
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    """Supply a favicon"""
+    return FileResponse("favicon.ico")
 
 
 # redirect root to the index page
