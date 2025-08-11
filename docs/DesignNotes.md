@@ -2,7 +2,7 @@
 
 ## Background
 
-Moving the design notes from [VoteTrackerPlus Discussion](https://github.com/TrustTheVote-Project/VoteTrackerPlus/discussions/51#discussioncomment-4772776) to here.
+Moving the design notes from [VoteTrackerPlus Discussion](https://github.com/OpenVotingTechnologyGroup/VoteTrackerPlus/discussions/51#discussioncomment-4772776) to here.
 
 ## Uber Context
 
@@ -38,7 +38,7 @@ A high level description of starting and stopping the demo.  Maybe it works as a
 
 ## Client/Server Endpoint Details
 
-This part is considered the demo's _design targat_ and not a project plan.  The actual project plan is used to create the [kanban board](https://github.com/orgs/TrustTheVote-Project/projects/5).  See that web page for the action plan.
+This part is considered the demo's _design targat_ and not a project plan.  The actual project plan is used to create the [kanban board](https://github.com/orgs/OpenVotingTechnologyGroup/projects/5).  See that web page for the action plan.
 
 ### Pre-demo steps (occurs during phase 1 above)
 
