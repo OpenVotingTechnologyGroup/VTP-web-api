@@ -1,13 +1,15 @@
 """API endpoints for the VoteTrackerPlus backend"""
-
-from backend import VtpBackend
+from pathlib import Path
+from .backend import VtpBackend
 from fastapi import FastAPI, status
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 # from starlette.responses import FileResponse
 
-app = FastAPI()
+App = FastAPI()
+
+STATIC_DIR = Path(__file__).parent / "static"
 
 ########
 # local variables
@@ -17,17 +19,17 @@ vote_store_ids = {}
 
 
 # mount a static root for the static pages
-app.mount("/static", StaticFiles(directory="static"), name="static")
+App.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
-@app.get("/favicon.ico", include_in_schema=False)
+@App.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     """Supply a favicon"""
     return FileResponse("static/favicon.ico")
 
 
 # redirect root to the index page
-@app.get("/")
+@App.get("/")
 async def root():
     """Redirect the default index.html page"""
     # return FileResponse("static/index.html")
@@ -35,7 +37,7 @@ async def root():
 
 
 # redirect a root index.html reference as well
-@app.get("/index.html")
+@App.get("/index.html")
 async def read_index():
     """Redirect the default index.html page"""
     # return FileResponse("static/index.html")
@@ -43,7 +45,7 @@ async def read_index():
 
 
 # a version/test endpoint
-@app.get("/web-api/version")
+@App.get("/web-api/version")
 async def webapi_version() -> dict:
     """Demonstrate that API is working"""
     return {"version": "0.1.0"}
@@ -53,7 +55,7 @@ async def webapi_version() -> dict:
 #
 # pylint: disable=line-too-long
 # % curl -i -X GET -H 'Content-Type: application/json' http://127.0.0.1:8000/web-api/get_blank_ballot
-@app.get("/web-api/get_blank_ballot")
+@App.get("/web-api/get_blank_ballot")
 async def get_blank_ballot(voter_address: str = "") -> dict:
     """Return an blank ballot for a given VoteStoreID"""
 
@@ -64,7 +66,7 @@ async def get_blank_ballot(voter_address: str = "") -> dict:
 # Testing Endpoint - reuse existin (backend) GUIDs
 # pylint: disable=line-too-long
 # % curl -i -X POST -H 'Content-Type: application/json' http://127.0.0.1:8000/web-api/restore-existing-guids
-@app.post("/web-api/restore_existing_guids")
+@App.post("/web-api/restore_existing_guids")
 async def restore_existing_guids() -> dict:
     """Will restore the existing vote_store_id's"""
     guids = VtpBackend.get_all_guid_workspaces()
@@ -77,7 +79,7 @@ async def restore_existing_guids() -> dict:
 #
 # pylint: disable=line-too-long
 # curl -i -X POST -H 'Content-Type: application/json' -d @docs/cast-ballot.json http://127.0.0.1:8000/web-api/cast_ballot
-@app.post("/web-api/cast_ballot")
+@App.post("/web-api/cast_ballot")
 async def cast_ballot(
     incoming_ballot_data: dict,
 ) -> dict:
@@ -85,7 +87,7 @@ async def cast_ballot(
     Uploads a castballot.  Will first create a guid workspace and use
     that to run the backend code.
 
-    Returns the GUID, ballot_receipt, row_index, and qr_svg image
+    Returns the GUID, ballot_receipt, row_index, qr_svg image, and receipt_digest
     """
     # breakpoint()
 
@@ -121,7 +123,7 @@ async def cast_ballot(
 #
 # pylint: disable=line-too-long
 # curl -i -X GET -H 'Content-Type: application/json' -d @receipts/receipt.59.json http://127.0.0.1:8000/web-api/verify_ballot_receipt
-@app.get("/web-api/verify_ballot_receipt/{vote_store_id}")
+@App.get("/web-api/verify_ballot_receipt/{vote_store_id}")
 async def verify_ballot_receipt(
     vote_store_id: str,
     incoming_receipt_data: dict,
@@ -145,7 +147,7 @@ async def verify_ballot_receipt(
 #
 # pylint: disable=line-too-long
 # curl -i -X GET http://127.0.0.1:8000/web-api/verify_ballot_row/$UIDS/$DIGESTS
-@app.get("/web-api/verify_ballot_row/{vote_store_id}/{uids}/{digests}")
+@App.get("/web-api/verify_ballot_row/{vote_store_id}/{uids}/{digests}")
 async def verify_ballot_row(
     vote_store_id: str,
     uids: str,
@@ -172,7 +174,7 @@ async def verify_ballot_row(
 # To manually test #4 do something like:
 # pylint: disable=line-too-long
 # curl -i -X GET -H 'Content-Type: application/json' http://127.0.0.1:8000/web-api/tally_contests/d08a278a9a6b82040d505b9aae194efb72cceb0e/0001/8bef5f87658c40bbe7dcda814422a59e844b204d
-@app.get("/web-api/tally_contests/{vote_store_id}/{contests}/{digests}/{verbosity}")
+@App.get("/web-api/tally_contests/{vote_store_id}/{contests}/{digests}/{verbosity}")
 async def tally_contests(
     vote_store_id: str,
     contests: str,
@@ -201,7 +203,7 @@ async def tally_contests(
 
 
 # Endpoint #6
-@app.get("/web-api/show_contest/{vote_store_id}/{contest}")
+@App.get("/web-api/show_contest/{vote_store_id}/{contest}")
 async def show_contest(
     vote_store_id: str,
     contest: str,
@@ -220,7 +222,7 @@ async def show_contest(
 
 
 # Endpoint #7
-@app.get("/web-api/show_versioned_receipt/{vote_store_id}/{digest}")
+@App.get("/web-api/show_versioned_receipt/{vote_store_id}/{digest}")
 async def show_versioned_receipt(
     vote_store_id: str,
     digest: str,

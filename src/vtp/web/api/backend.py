@@ -31,6 +31,7 @@ need when running in mock mode.
 """
 
 import json
+from pathlib import Path
 import os
 import re
 
@@ -56,23 +57,26 @@ class VtpBackend:
     ########
     # set mock mode
     _MOCK_MODE = False
+    _MOCK_DATA_DIR = Path(__file__).parent / "mock-data"
     # where the blank ballot is stored for the spring demo
-    _MOCK_BLANK_BALLOT = "mock-data/blank-ballot.json"
+    _MOCK_BLANK_BALLOT = _MOCK_DATA_DIR / "blank-ballot.json"
     # where the cast-ballot.json file is stored for the spring demo
-    _MOCK_CAST_BALLOT = "mock-data/cast-ballot.json"
+    _MOCK_CAST_BALLOT = _MOCK_DATA_DIR / "cast-ballot.json"
     # where the ballot-check is stored for the spring demo
-    _MOCK_BALLOT_CHECK = "mock-data/receipt.26.csv"
-    _MOCK_VOTER_INDEX = 26
+    _MOCK_BALLOT_CHECK = _MOCK_DATA_DIR / "receipt.70.json"
+    _MOCK_VOTER_INDEX = 70
     # a mock contest content
-    _MOCK_CONTEST_CONTENT = "mock-data/mock_contest.json"
+    _MOCK_CONTEST_CONTENT = _MOCK_DATA_DIR / "mock_contest.json"
     # default guid - making one up
     _MOCK_GUID = "01d963fd74100ee3f36428740a8efd8afd781839"
+    # default receipt_digest - making one up
+    _MOCK_RECEIPT_DIGEST = "abababababababababababababababababababab"
     # default mock receipt log
-    _MOCK_VERIFY_BALLOT_LOG = "mock-data/verify-ballot-doc.json"
+    _MOCK_VERIFY_BALLOT_LOG = _MOCK_DATA_DIR / "verify-ballot-doc.json"
     # default mock tally log
-    _MOCK_TALLY_CONTESTS_LOG = "mock-data/tally-election-doc.json"
+    _MOCK_TALLY_CONTESTS_LOG = _MOCK_DATA_DIR / "tally-election-doc.json"
     # default mock show contest log
-    _MOCK_SHOW_CONTEST_LOG = "mock-data/show-contest-doc.json"
+    _MOCK_SHOW_CONTEST_LOG = _MOCK_DATA_DIR / "show-contest-doc.json"
     # backend default address
     _ADDRESS = "123, Main Street, Concord, Massachusetts"
 
@@ -133,7 +137,7 @@ class VtpBackend:
         """Mock only - return a static cast ballot"""
         with open(VtpBackend._MOCK_BALLOT_CHECK, "r", encoding="utf8") as infile:
             json_doc = json.load(infile)
-        return json_doc["ballot_check"], json_doc["ballot_row"], json_doc["qr_svg"]
+        return json_doc["ballot-check"], json_doc["vote-index"], "", VtpBackend._MOCK_RECEIPT_DIGEST
 
     @staticmethod
     def cast_ballot(
@@ -147,7 +151,7 @@ class VtpBackend:
             # Just return a mock ballot-check and voter-index
             return VtpBackend.mock_get_ballot_check()
         # handle the incoming ballot and return the ballot-check and voter-index
-        verbosity = os.getenv("BACKEND_VERBOSITY")
+        verbosity = os.getenv("BACKEND_VERBOSITY", "3")
         verbosity = int(verbosity) if re.match(r"^[0-9]$", verbosity) else 3
         operation = AcceptBallotOperation(
             election_data_dir=WebAPI.get_guid_based_edf_dir(vote_store_id),
