@@ -31,9 +31,9 @@ need when running in mock mode.
 """
 
 import json
-from pathlib import Path
 import os
 import re
+from pathlib import Path
 
 from vtp.core.common import Globals
 from vtp.core.webapi import WebAPI
@@ -137,7 +137,12 @@ class VtpBackend:
         """Mock only - return a static cast ballot"""
         with open(VtpBackend._MOCK_BALLOT_CHECK, "r", encoding="utf8") as infile:
             json_doc = json.load(infile)
-        return json_doc["ballot-check"], json_doc["vote-index"], "", VtpBackend._MOCK_RECEIPT_DIGEST
+        return (
+            json_doc["ballot-check"],
+            json_doc["vote-index"],
+            "",
+            VtpBackend._MOCK_RECEIPT_DIGEST,
+        )
 
     @staticmethod
     def cast_ballot(

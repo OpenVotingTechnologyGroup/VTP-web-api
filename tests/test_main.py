@@ -2,9 +2,9 @@
 
 from fastapi.testclient import TestClient
 
-from vtp.web.api.main import App
+from vtp.web.api.main import app
 
-client = TestClient(App)
+client = TestClient(app)
 
 
 def test_get_root():

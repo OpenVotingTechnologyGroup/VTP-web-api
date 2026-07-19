@@ -1,14 +1,20 @@
 """Shared pytest fixtures for VTP-web-api tests"""
+
+# pytest.fixture by design redefines the decorator's definition
+# pylint: disable=redefined-outer-name
+
 import json
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
-from vtp.web.api.main import App
 from vtp.web.api.backend import VtpBackend
+from vtp.web.api.main import app
 
-MOCK_DATA_DIR = Path(__file__).parent.parent / "src" / "vtp" / "web" / "api" / "mock-data"
+MOCK_DATA_DIR = (
+    Path(__file__).parent.parent / "src" / "vtp" / "web" / "api" / "mock-data"
+)
 
 
 @pytest.fixture(autouse=True)
@@ -19,8 +25,8 @@ def mock_mode(monkeypatch):
 
 @pytest.fixture
 def client():
-    """A TestClient wrapping the FastAPI App"""
-    return TestClient(App)
+    """A TestClient wrapping the FastAPI app"""
+    return TestClient(app)
 
 
 @pytest.fixture
