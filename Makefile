@@ -84,10 +84,10 @@ lan:
 	@ifconfig | awk '/inet /&&!/127.0.0.1/{print $$2}'
 	@/bin/echo -n "Public IP = "
 	@dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com | tr -d '"'
-	cd src/vtp/web/api && PRIORITIZE_BALLOTS=${PRIORITIZE_BALLOTS} BACKEND_VERBOSITY=${BACKEND_VERBOSITY} uvicorn main:app --host ${HOST} --port ${PORT} ${LOG_LEVEL} --reload --reload-dir . --reload-dir ../../../../../VTP-web-client/static
+	PRIORITIZE_BALLOTS=${PRIORITIZE_BALLOTS} BACKEND_VERBOSITY=${BACKEND_VERBOSITY} uvicorn vtp.web.api.main:app --host ${HOST} --port ${PORT} ${LOG_LEVEL} --reload --reload-dir src/vtp/web/api --reload-dir ../VTP-web-client/static
 
 localhost:
-	cd src/vtp/web/api && PRIORITIZE_BALLOTS=${PRIORITIZE_BALLOTS} BACKEND_VERBOSITY=${BACKEND_VERBOSITY} uvicorn main:app --host 127.0.0.1 --port ${PORT} ${LOG_LEVEL} --reload --reload-dir . --reload-dir ../../../../../VTP-web-client/static
+	PRIORITIZE_BALLOTS=${PRIORITIZE_BALLOTS} BACKEND_VERBOSITY=${BACKEND_VERBOSITY} uvicorn vtp.web.api.main:app --host 127.0.0.1 --port ${PORT} ${LOG_LEVEL} --reload --reload-dir src/vtp/web/api --reload-dir ../VTP-web-client/static
 
 .PHONY: QRcodes
 QRcodes:
