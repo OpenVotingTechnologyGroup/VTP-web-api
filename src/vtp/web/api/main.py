@@ -1,13 +1,18 @@
 """API endpoints for the VoteTrackerPlus backend"""
 
-from backend import VtpBackend
+from pathlib import Path
+
 from fastapi import FastAPI, status
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from .backend import VtpBackend
+
 # from starlette.responses import FileResponse
 
 app = FastAPI()
+
+STATIC_DIR = Path(__file__).parent / "static"
 
 ########
 # local variables
@@ -17,7 +22,7 @@ vote_store_ids = {}
 
 
 # mount a static root for the static pages
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 @app.get("/favicon.ico", include_in_schema=False)
@@ -85,7 +90,7 @@ async def cast_ballot(
     Uploads a castballot.  Will first create a guid workspace and use
     that to run the backend code.
 
-    Returns the GUID, ballot_receipt, row_index, and qr_svg image
+    Returns the GUID, ballot_receipt, row_index, qr_svg image, and receipt_digest
     """
     # breakpoint()
 

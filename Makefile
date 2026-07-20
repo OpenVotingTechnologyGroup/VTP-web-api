@@ -42,19 +42,19 @@ endif
 .PHONY: help
 help:
 	@echo "${RED}There is no default make target.${END}  Specify one of:"
-	@echo "pylint             - runs pylint"
-	@echo "pytest             - runs pytest"
-	@echo "poetry-build       - performs a poetry local install"
-	@echo "poetry-list-latest - will show which poetry packages have updates"
-	@echo "requirements.txt   - updates the python requirements file"
-	@echo "etags              - constructs an emacs tags table"
-	@echo "conjoin            - conjoins the VoteTrackerPlus repos via symlinks"
-	@echo "QRcodes            - will generate lan / local QR codes"
+	@echo "pylint               - runs pylint"
+	@echo "pytest               - runs pytest"
+	@echo "poetry-local-install - performs a poetry local install (run once)"
+	@echo "poetry-list-latest   - will show which poetry packages have updates"
+	@echo "requirements.txt     - updates the python requirements file"
+	@echo "etags                - constructs an emacs tags table"
+	@echo "conjoin              - conjoins the VoteTrackerPlus repos via symlinks"
+	@echo "QRcodes              - will generate lan / local QR codes"
 	@echo "lan       - will run the uvicorn web-api server (main:app) in LAN"
 	@echo "            mode (host=${HOST}).  This means that uvicorn will listen"
 	@echo "            on the local LAN for connections ${RED}REQUIRING A FIREWALL${END}"
 	@echo "            ${RED}FOR SECURITY${END}."
-	@evho "            See https://www.uvicorn.org/settings for more info."
+	@echo "            See https://www.uvicorn.org/settings for more info."
 	@echo "localhost - will run the uvicorn web-api server (main:app) in"
 	@echo "            localhost mode (host=127.0.0.1) - the uvicorn server"
 	@echo "            will only respond to host local connections."
@@ -70,8 +70,8 @@ pylint:
 	pylint --recursive y ${SRC_DIR} ${TEST_DIR}
 
 .PHONY: poetry-build poetry-list-latest
-poetry-build:
-	poetry shell && poetry install
+poetry-local-install: conjoin
+	poetry install
 poetry-list-latest:
 	poetry show -o
 # Generate a requirements.txt for dependabot (ignoring the symlinks)
@@ -84,10 +84,10 @@ lan:
 	@ifconfig | awk '/inet /&&!/127.0.0.1/{print $$2}'
 	@/bin/echo -n "Public IP = "
 	@dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com | tr -d '"'
-	cd src/vtp/web/api && PRIORITIZE_BALLOTS=${PRIORITIZE_BALLOTS} BACKEND_VERBOSITY=${BACKEND_VERBOSITY} uvicorn main:app --host ${HOST} --port ${PORT} ${LOG_LEVEL} --reload --reload-dir . --reload-dir ../../../../../VTP-web-client/static
+	PRIORITIZE_BALLOTS=${PRIORITIZE_BALLOTS} BACKEND_VERBOSITY=${BACKEND_VERBOSITY} uvicorn vtp.web.api.main:app --host ${HOST} --port ${PORT} ${LOG_LEVEL} --reload --reload-dir src/vtp/web/api --reload-dir ../VTP-web-client/static
 
 localhost:
-	cd src/vtp/web/api && PRIORITIZE_BALLOTS=${PRIORITIZE_BALLOTS} BACKEND_VERBOSITY=${BACKEND_VERBOSITY} uvicorn main:app --host 127.0.0.1 --port ${PORT} ${LOG_LEVEL} --reload --reload-dir . --reload-dir ../../../../../VTP-web-client/static
+	PRIORITIZE_BALLOTS=${PRIORITIZE_BALLOTS} BACKEND_VERBOSITY=${BACKEND_VERBOSITY} uvicorn vtp.web.api.main:app --host 127.0.0.1 --port ${PORT} ${LOG_LEVEL} --reload --reload-dir src/vtp/web/api --reload-dir ../VTP-web-client/static
 
 .PHONY: QRcodes
 QRcodes:
