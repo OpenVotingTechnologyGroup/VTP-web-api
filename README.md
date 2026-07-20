@@ -1,6 +1,6 @@
 # VoteTrackerPlus Web API
 
-A FastAPI interface to the VoteTrackerPlus (VTP) backend, to support a live participatory demo in the spring of 2023.
+This VoteTrackerPlus project repository contains the FastAPI interface between the VTP python backend and the VTP web client JavaScript/html/css front end.  By wiring these three repositories together with a VTP ElectionData repository tree one can host and run an election.
 
 ## Useful Links
 
@@ -8,7 +8,7 @@ The general layout and relationship of the various VTP repos is described in the
 
 See the [VoteTrackerPlus](https://github.com/TrustTheVote-Project/VoteTrackerPlus) repository for general VTP design and project information - that repo is the primary VTP repo.
 
-See the [developer readme](https://github.com/TrustTheVote-Project/VoteTrackerPlus/tree/main/src/vtp) in the VoteTrackerPlus repo for even more details.
+See the [developer readme](https://github.com/TrustTheVote-Project/VoteTrackerPlus/tree/main/src/vtp) in the VoteTrackerPlus repo for more detailed information.
 
 - For an overview of the demo project, check out [the project mind map](https://www.mindmeister.com/map/2534840002?t=2nMk3h9Uha).
 - This repo also includes web-api [Design Notes](docs/DesignNotes.md).
@@ -26,7 +26,7 @@ With poetry properly installed on your system:
 
 ```bash
 $ poetry install
-$ poetry shell
+$ poetry env activate
 ```
 
 This project requires Python 3.10 or later.
@@ -55,8 +55,10 @@ INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 
 ## Testing the API endpoints in your browser
 
-To test the API endpoints using the uvicorn server, go to the URL specified in the above output in your favorite browser. You'll see the version information for this API server.
+To manually test the API endpoints using the uvicorn server, go to the URL specified in the above output in your favorite browser. You'll see the version information for this API server.
 
 To include the python backend, in another terminal window configure the VoteTrackerPlus repo and perform a local installation of the ElectionData repo.  See the [README](https://github.com/TrustTheVote-Project/VoteTrackerPlus) for more info.
 
 With the uvicorn server running and with a local installion of a VoteTrackerPlus election, which is nominally installed in /opt/VoteTrackerPlus/demo.01 by default, one should be able to connect to the index.html page of the uvicorn server and vote, get a ballot receipt, verify the receipt, inspect contest CVRs, and tally contests.
+
+There are also the beginnings of a pytest framework using mock data that could use more work.
